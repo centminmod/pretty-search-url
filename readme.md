@@ -191,7 +191,7 @@ X-Content-Type-Options: nosniff
 Check-Uri: /?s=wordpress+cache
 Set-Uri: /?s=wordpress+cache
 ```
-cached search at 95,189 OR 104,448 requests/sec versus non-cached search at 332 requests/sec
+cached search at 95,189 or 104,448 requests/sec versus non-cached search at 332 requests/sec
 ```
 wrk-cmm -t4 -c50 -d20s --latency --breakout http://cache-enabler.domain.com/?s=wordpress+cache            
 Running 20s test @ http://cache-enabler.domain.com/?s=wordpress+cache
@@ -210,4 +210,22 @@ Running 20s test @ http://cache-enabler.domain.com/?s=wordpress+cache
   6663 requests in 20.02s, 181.04MB read
 Requests/sec:    332.85
 Transfer/sec:      9.04MB
+```
+
+# Custom /search/ cache invalidation cronjob
+
+Centmin Mod 123.09beta01's centmin.sh menu option 22 wordpress auto installer with Cache Enabler caching selected will also generate an optional cronjob to invalidate and remove Cache Enabler cached files from cache and look similar to:
+
+Remove Cache Enabler's cached files every day at 11:16pm (every 24hrs).
+
+```
+16 23 * * * echo "cache-enabler.domain.com cacheenabler cron"; sleep 174s ; rm -rf /home/nginx/domains/cache-enabler.domain.com/public/wp-content/cache/cache-enabler/* > /dev/null 2>&1
+```
+
+With above `/search/` caching modifications, you could setup a separate `/search/` cache invalidation cronjob which can have a shorter or longer interval than default Cache Enabler cache time.
+
+For example delete `/search/` cached files after 15 minutes
+
+```
+*/5 * * * * echo "cache-enabler.domain.com cacheenabler search cron"; sleep 14s ; rm -rf /home/nginx/domains/cache-enabler.domain.com/public/wp-content/cache/cache-enabler/search/* > /dev/null 2>&1
 ```
