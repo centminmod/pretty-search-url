@@ -224,7 +224,7 @@ Remove Cache Enabler's cached files every day at 11:16pm (every 24hrs).
 
 With above `/search/` caching modifications, you could setup a separate `/search/` cache invalidation cronjob which can have a shorter or longer interval than default Cache Enabler cache time.
 
-For example delete `/search/` cached files after 15 minutes
+For example delete `/search/` cached files every 5 minutes
 
 ```
 */5 * * * * echo "cache-enabler.domain.com cacheenabler search cron"; sleep 14s ; rm -rf /home/nginx/domains/cache-enabler.domain.com/public/wp-content/cache/cache-enabler/search/* > /dev/null 2>&1
