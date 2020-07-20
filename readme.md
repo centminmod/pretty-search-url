@@ -1,6 +1,6 @@
 # Pretty Search Url Wordpress Plugin
 
-This plugin allows Wordpress `?s=wordpress+cache` query strings to be redirected to pretty url format `/search/wordpress+cache/` which is a ncessary step to enable Wordpress Cache Enabler plugin's advanced Nginx caching configuration with Centmin Mod 123.09beta01 and higher's Wordpress auto installer's Cache Enabler setup as outlined [here](https://community.centminmod.com/threads/caching-search-results-with-standard-centminmod-install.20027/#post-85037).
+This plugin allows Wordpress `?s=wordpress+cache` query strings to be redirected to pretty url format `/search/wordpress+cache/` which is a necessary step to enable Wordpress Cache Enabler plugin's advanced Nginx caching configuration with Centmin Mod 123.09beta01 and higher's Wordpress auto installer's Cache Enabler setup as outlined [here](https://community.centminmod.com/threads/caching-search-results-with-standard-centminmod-install.20027/#post-85037).
 
 # Install
 
@@ -84,13 +84,36 @@ Then in `/usr/local/nginx/conf/wpincludes/cache-enabler.domain.com/wpcacheenable
     if ($args ~* s=(.*)) {
       set $cache_uri $request_uri;
       set $check_surl $cache_uri;
-      set $cache_uri /search/$1;
+      set $cache_uri /search/$1/;
+      set $cache_uri_search /search/$1/;
+      set $cache_enabler_uri_search '${custom_subdir}/wp-content/cache/cache-enabler/${http_host}${cache_uri_search}index.html';
+    }
+    location ~ /search/(.*) {
+      set $cache_uri $request_uri;
+      set $check_surl $cache_uri;
+      set $cache_uri_search $request_uri;
+      set $cache_enabler_uri_search '${custom_subdir}/wp-content/cache/cache-enabler/${http_host}${check_surl}index.html';
+      try_files $cache_enabler_uri_search $cache_enabler_uri_webp $cache_enabler_uri $uri $uri/ $custom_subdir/index.php?$args;
     }
     add_header Check-Uri "$check_surl";
     add_header Set-Uri "$cache_uri";
 
     # default html file
     set $cache_enabler_uri '${custom_subdir}/wp-content/cache/cache-enabler/${http_host}${cache_uri}index.html';
+
+    # webp html file
+    if ($http_accept ~* "image/webp") {
+        set $cache_enabler_uri_webp '${custom_subdir}/wp-content/cache/cache-enabler/${http_host}${cache_uri}index-webp.html';
+    }
+
+    if (-f $document_root$cache_enabler_uri_search) {
+      set $search_exists $cache_enabler_uri_search;
+      return 302 https://$host$cache_uri_search;
+    }
+    if (!-f $document_root$cache_enabler_uri_search) {
+      set $search_exists $cache_enabler_uri_search;
+    }
+    #add_header Check-File "$search_exists";
 ```
 So now returned header via `Set-Uri` is = `$cache_uri`
 
