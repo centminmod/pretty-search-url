@@ -273,6 +273,24 @@ Running 20s test @ http://cache-enabler.domain.com/?s=wordpress+cache
 Requests/sec: 198476.64
 Transfer/sec:    120.38MB
 ```
+
+### Checking If Wordpress Search Results Are Cached
+
+Example of the cached request file saved on disk at `/home/nginx/domains/cache-enabler.domain.com/public/wp-content/cache/cache-enabler/cache-enabler.domain.com/search/wordpress+cache` for both `index.html` and pre-gzip compressed `index.html.gz`. Centmin Mod Nginx server out of box is configured to serve the pre-gzip compressed version if it detects it exists which can improve Nginx static file serving performance by up to >80x times compared to serving via Nginx's on the fly gzip compression.
+
+```
+ls -lh /home/nginx/domains/cache-enabler.domain.com/public/wp-content/cache/cache-enabler/cache-enabler.domain.com/search/wordpress+cache 
+total 36K
+-rw-rw---- 1 nginx nginx  25K Jul 21 23:20 index.html
+-rw-rw---- 1 nginx nginx 6.9K Jul 21 23:20 index.html.gz
+```
+
+On the Wordpress search result page at `http://cache-enabler.domain.com/search/wordpress+cache/`, the HTML source code footer will have a comment indicating it was cached and pre-gzip compressed by Cache Enabler like
+
+```php
+<!-- Cache Enabler by KeyCDN @ 21.07.2020 23:20:01 (html gzip) -->
+```
+
 ### wrk-cmm with wordpress search non-cached
 
 compared to default without wordpress search cache
