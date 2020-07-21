@@ -291,7 +291,7 @@ X-Content-Type-Options: nosniff
 Check-Uri: /?s=wordpress+cache
 Set-Uri: /?s=wordpress+cache
 ```
-cached search at 95,189 or 104,448 requests/sec versus non-cached search at 332 requests/sec
+Before July 20, 2020 non-cached search at 332 requests/sec
 ```
 wrk-cmm -t4 -c50 -d20s --latency --breakout http://cache-enabler.domain.com/?s=wordpress+cache            
 Running 20s test @ http://cache-enabler.domain.com/?s=wordpress+cache
@@ -310,6 +310,27 @@ Running 20s test @ http://cache-enabler.domain.com/?s=wordpress+cache
   6663 requests in 20.02s, 181.04MB read
 Requests/sec:    332.85
 Transfer/sec:      9.04MB
+```
+After July 20, 2020 non-cached search at 683.83 requests/sec
+
+```
+wrk-cmm -t4 -c50 -d20s --latency --breakout http://cache-enabler.domain.com/?s=wordpress+cache
+Running 20s test @ http://cache-enabler.domain.com/?s=wordpress+cache
+  4 threads and 50 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency    70.02ms   11.92ms 164.77ms   71.72%
+    Connect   162.48us   73.21us 303.00us   58.33%
+    TTFB       70.01ms   11.92ms 164.76ms   71.71%
+    TTLB        4.24us    1.27us  54.00us   95.82%
+    Req/Sec   171.61     17.16   220.00     63.38%
+  Latency Distribution
+     50%   68.30ms
+     75%   76.17ms
+     90%   86.80ms
+     99%  103.26ms
+  13693 requests in 20.02s, 5.67MB read
+Requests/sec:    683.83
+Transfer/sec:    289.83KB
 ```
 
 # Custom /search/ cache invalidation cronjob
