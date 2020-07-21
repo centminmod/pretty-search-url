@@ -148,39 +148,47 @@ So now returned header via `Set-Uri` is = `$cache_uri`
 
 ```
 curl -IL http://cache-enabler.domain.com/?s=wordpress+cache
-HTTP/1.1 200 OK
-Date: Thu, 16 Jul 2020 15:07:02 GMT
-Content-Type: text/html; charset=utf-8
-Content-Length: 25301
-Last-Modified: Thu, 16 Jul 2020 14:41:58 GMT
+HTTP/1.1 302 Found
+Date: Tue, 21 Jul 2020 23:07:52 GMT
+Content-Type: text/html; charset=UTF-8
 Connection: keep-alive
-Vary: Accept-Encoding
-ETag: "5f106736-62d5"
+X-Redirect-By: WordPress
+Location: http://cache-enabler.domain.com/search/wordpress+cache/
 Server: nginx centminmod
 X-Powered-By: centminmod
 X-Xss-Protection: 1; mode=block
 X-Content-Type-Options: nosniff
 Check-Uri: /?s=wordpress+cache
 Set-Uri: /search/wordpress+cache/
-Accept-Ranges: bytes
+
+HTTP/1.1 200 OK
+Date: Tue, 21 Jul 2020 23:07:52 GMT
+Content-Type: text/html; charset=UTF-8
+Connection: keep-alive
+Vary: Accept-Encoding
+Link: <http://cache-enabler.domain.com/wp-json/>; rel="https://api.w.org/"
+Server: nginx centminmod
+X-Powered-By: centminmod
+X-Xss-Protection: 1; mode=block
+X-Content-Type-Options: nosniff
+Check-Uri: /search/wordpress+cache/
+Set-Uri: /search/wordpress+cache/
 ```
 direct cached url access
 ```
 curl -I http://cache-enabler.domain.com/search/worldpress+cache/
 HTTP/1.1 200 OK
-Date: Thu, 16 Jul 2020 15:08:23 GMT
-Content-Type: text/html; charset=utf-8
-Content-Length: 19736
-Last-Modified: Thu, 16 Jul 2020 15:07:54 GMT
+Date: Tue, 21 Jul 2020 23:08:31 GMT
+Content-Type: text/html; charset=UTF-8
 Connection: keep-alive
 Vary: Accept-Encoding
-ETag: "5f106d4a-4d18"
+Link: <http://cache-enabler.domain.com/wp-json/>; rel="https://api.w.org/"
 Server: nginx centminmod
 X-Powered-By: centminmod
 X-Xss-Protection: 1; mode=block
 X-Content-Type-Options: nosniff
+Check-Uri: /search/worldpress+cache/
 Set-Uri: /search/worldpress+cache/
-Accept-Ranges: bytes
 ```
 
 ### wrk-cmm with wordpress search cached
