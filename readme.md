@@ -82,6 +82,22 @@ Then in `/usr/local/nginx/conf/wpincludes/cache-enabler.domain.com/wpcacheenable
 
 July 20, 2020 updated config so Nginx takes over from Wordpress redirects so PHP-FPM request is totally bypassed for query string `?s=` requests and specific `/search/` location match so that you can do more specific things in future i.e. rate limit within `/search/` if needed
 
+In `/usr/local/nginx/conf/wpincludes/cache-enabler.domain.com/wpcacheenabler_cache-enabler.domain.com.conf`
+
+change from
+
+```
+    # default html file
+    set $cache_enabler_uri '${custom_subdir}/wp-content/cache/cache-enabler/${http_host}${cache_uri}index.html';
+
+    # webp html file
+    if ($http_accept ~* "image/webp") {
+        set $cache_enabler_uri_webp '${custom_subdir}/wp-content/cache/cache-enabler/${http_host}${cache_uri}index-webp.html';
+    }
+```
+
+to
+
 ```
     if ($args ~* s=(.*)) {
       set $cache_uri $request_uri;
