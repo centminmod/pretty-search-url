@@ -2,6 +2,15 @@
 
 This plugin allows Wordpress `?s=wordpress+cache` query strings to be redirected to pretty url format `/search/wordpress+cache/` which is a necessary step to enable Wordpress Cache Enabler plugin's advanced Nginx caching configuration with Centmin Mod 123.09beta01 and higher's Wordpress auto installer's Cache Enabler setup as outlined [here](https://community.centminmod.com/threads/caching-search-results-with-standard-centminmod-install.20027/#post-85037).
 
+Cache Enabler plugin has 2 methods of doing caching:
+
+1. The default way for non-Centmin Mod LEMP stack plugin installs relies on Cache Enabler doing at PHP process level both cached file generation on requests and also doing the caching logic - determining if a request has an associated cached HTML page generated and whether to serve that cached HTML page or whether to bypass cache and grab the request from backend PHP/MySQL.
+
+
+2. Cache Enabler also allows you to configure advanced caching where the second part for caching logic is offloaded from PHP to the web server i.e. Centmin Mod Nginx. This is what [Centmin Mod 123.09beta01 and higher's LEMP stack Wordpress autoinstaller](https://community.centminmod.com/threads/differences-between-wordpress-regular-install-vs-centmin-sh-menu-option-22-install.15435/) configures for Cache Enabler out of the box - advanced guest full HTML page caching for Wordpress requests where PHP only generates the cached files but offloads the caching logic itself from PHP to Nginx. This allows for much faster caching performance as Nginx can serve cached files much better than serving the cached files through PHP process. That is why Centmin Mod's auto configured Cache Enabler caching performance is better than other folks caching results when they only install Cache Enabler plugin without configuring any advanced web server level caching logic offload.
+
+Cache Enabler in this advanced caching mode will then do guest based full HTML page caching for Wordpress search requests from pretty url format `/search/wordpress+cache/` by saving the cached full HTML page to local disk cached file via PHP process for the first request. Then subequent requests will bypass PHP completely and move caching logic to Nginx level. So if a cached version of the request exists, Nginx server itself (not PHP) will determine if it will serve the cached file or if it detects a query string request i.e. `?s=wordpress+cache`, it will bypass Wordpress Pretty Search Url plugin's PHP logic and let Nginx server itself do the 302 redirect to `/search/wordpress+cache/`.
+
 # Install
 
 You can upload contents of this repository to `wp-content/plugins/pretty-search-url` directory you manually create and actiavte plugin from within Wordpress Admin.
