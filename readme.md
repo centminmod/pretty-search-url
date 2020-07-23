@@ -13,7 +13,7 @@ Cache Enabler in this advanced caching mode will then do guest based full HTML p
 
 # Install
 
-You can upload contents of this repository to `wp-content/plugins/pretty-search-url` directory you manually create and actiavte plugin from within Wordpress Admin.
+You can upload contents of this repository to `wp-content/plugins/pretty-search-url` directory you manually create and activate plugin from within Wordpress Admin.
 
 Or for [Centmin Mod LEMP stack Nginx users](https://centminmod.com), install from SSH command line - replacing domain variable `domain.com` with your domain name:
 
@@ -118,6 +118,7 @@ to
       set $cache_enabler_uri_search '${custom_subdir}/wp-content/cache/cache-enabler/${http_host}${cache_uri_search}index.html';
     }
     location ~ /search/(.*) {
+      add_header Search 1;
       set $cache_uri $request_uri;
       set $check_surl $cache_uri;
       set $cache_uri_search $request_uri;
@@ -148,11 +149,11 @@ So now returned header via `Set-Uri` is = `$cache_uri`
 
 ```
 curl -IL http://cache-enabler.domain.com/?s=wordpress+cache
-HTTP/1.1 302 Found
-Date: Tue, 21 Jul 2020 23:07:52 GMT
-Content-Type: text/html; charset=UTF-8
+HTTP/1.1 302 Moved Temporarily
+Date: Thu, 23 Jul 2020 07:14:11 GMT
+Content-Type: text/html
+Content-Length: 138
 Connection: keep-alive
-X-Redirect-By: WordPress
 Location: http://cache-enabler.domain.com/search/wordpress+cache/
 Server: nginx centminmod
 X-Powered-By: centminmod
@@ -162,33 +163,34 @@ Check-Uri: /?s=wordpress+cache
 Set-Uri: /search/wordpress+cache/
 
 HTTP/1.1 200 OK
-Date: Tue, 21 Jul 2020 23:07:52 GMT
-Content-Type: text/html; charset=UTF-8
+Date: Thu, 23 Jul 2020 07:14:11 GMT
+Content-Type: text/html; charset=utf-8
+Content-Length: 25301
+Last-Modified: Thu, 23 Jul 2020 07:10:12 GMT
 Connection: keep-alive
 Vary: Accept-Encoding
-Link: <http://cache-enabler.domain.com/wp-json/>; rel="https://api.w.org/"
+ETag: "5f1937d4-62d5"
 Server: nginx centminmod
 X-Powered-By: centminmod
-X-Xss-Protection: 1; mode=block
-X-Content-Type-Options: nosniff
-Check-Uri: /search/wordpress+cache/
-Set-Uri: /search/wordpress+cache/
+Search: 1
+Accept-Ranges: bytes
+
 ```
 direct cached url access
 ```
-curl -I http://cache-enabler.domain.com/search/worldpress+cache/
+curl -I http://cache-enabler.domain.com/search/wordpress+cache/
 HTTP/1.1 200 OK
-Date: Tue, 21 Jul 2020 23:08:31 GMT
-Content-Type: text/html; charset=UTF-8
+Date: Thu, 23 Jul 2020 07:16:17 GMT
+Content-Type: text/html; charset=utf-8
+Content-Length: 25301
+Last-Modified: Thu, 23 Jul 2020 07:10:12 GMT
 Connection: keep-alive
 Vary: Accept-Encoding
-Link: <http://cache-enabler.domain.com/wp-json/>; rel="https://api.w.org/"
+ETag: "5f1937d4-62d5"
 Server: nginx centminmod
 X-Powered-By: centminmod
-X-Xss-Protection: 1; mode=block
-X-Content-Type-Options: nosniff
-Check-Uri: /search/worldpress+cache/
-Set-Uri: /search/worldpress+cache/
+Search: 1
+Accept-Ranges: bytes
 ```
 
 ### wrk-cmm with wordpress search cached
@@ -215,23 +217,24 @@ Transfer/sec:      1.79GB
 ```
 July 20, 2020 updated load test with my forked wrk
 ```
-wrk-cmm -t4 -c50 -d20s --latency --breakout http://cache-enabler.domain.com/search/worldpress+cache/
-Running 20s test @ http://cache-enabler.domain.com/search/worldpress+cache/
+wrk-cmm -t4 -c50 -d20s --latency --breakout http://cache-enabler.domain.com/search/wordpress+cache/
+Running 20s test @ http://cache-enabler.domain.com/search/wordpress+cache/
   4 threads and 50 connections
   Thread Stats   Avg      Stdev     Max   +/- Stdev
-    Latency     2.25ms   15.86ms 301.40ms   98.66%
-    Connect   203.46us  148.93us 660.00us   87.50%
-    TTFB        2.24ms   15.87ms 301.39ms   98.66%
-    TTLB       10.40us   37.28us   9.02ms   99.96%
-    Req/Sec    28.00k     9.43k   44.87k    66.67%
+    Latency     1.20ms    6.12ms 124.69ms   97.87%
+    Connect   179.00us   89.20us 362.00us   62.50%
+    TTFB        1.19ms    6.12ms 124.68ms   97.87%
+    TTLB       13.37us   59.32us  16.59ms   99.95%
+    Req/Sec    26.75k     8.31k   49.59k    65.29%
   Latency Distribution
-     50%  311.00us
-     75%  534.00us
-     90%    1.61ms
-     99%   49.76ms
-  2226160 requests in 20.07s, 41.85GB read
-Requests/sec: 110910.78
-Transfer/sec:      2.08GB
+     50%  304.00us
+     75%  576.00us
+     90%    1.38ms
+     95%    3.66ms
+     99%   11.13ms
+  2134184 requests in 20.11s, 50.92GB read
+Requests/sec: 106140.60
+Transfer/sec:      2.53GB
 ```
 Before July 20, 2020 direct query search cached
 ```
@@ -259,19 +262,20 @@ wrk-cmm -t4 -c50 -d20s --latency --breakout http://cache-enabler.domain.com/?s=w
 Running 20s test @ http://cache-enabler.domain.com/?s=wordpress+cache
   4 threads and 50 connections
   Thread Stats   Avg      Stdev     Max   +/- Stdev
-    Latency   775.44us    1.85ms  29.36ms   91.06%
-    Connect   237.04us  131.89us 567.00us   62.75%
-    TTFB      771.92us    1.85ms  29.36ms   91.06%
-    TTLB        2.09us   32.86us  10.16ms   99.98%
-    Req/Sec    50.01k    12.86k   71.21k    68.12%
+    Latency     0.92ms    2.17ms  50.59ms   90.15%
+    Connect     1.06ms  807.10us   2.76ms   58.27%
+    TTFB        0.91ms    2.17ms  50.59ms   90.15%
+    TTLB        2.17us   39.52us  10.77ms   99.98%
+    Req/Sec    51.04k    14.08k   72.57k    64.88%
   Latency Distribution
-     50%  151.00us
-     75%  308.00us
-     90%    2.14ms
-     99%    9.24ms
-  3985306 requests in 20.08s, 2.36GB read
-Requests/sec: 198476.64
-Transfer/sec:    120.38MB
+     50%  147.00us
+     75%  321.00us
+     90%    3.02ms
+     95%    5.94ms
+     99%    9.84ms
+  4065047 requests in 20.04s, 2.01GB read
+Requests/sec: 202841.81
+Transfer/sec:    102.72MB
 ```
 
 ### Checking If Wordpress Search Results Are Cached
@@ -279,16 +283,16 @@ Transfer/sec:    120.38MB
 Example of the cached request file saved on disk at `/home/nginx/domains/cache-enabler.domain.com/public/wp-content/cache/cache-enabler/cache-enabler.domain.com/search/wordpress+cache` for both `index.html` and pre-gzip compressed `index.html.gz`. Centmin Mod Nginx server out of box is configured to serve the pre-gzip compressed version if it detects it exists which can improve Nginx static file serving performance by up to >80x times compared to serving via Nginx's on the fly gzip compression.
 
 ```
-ls -lh /home/nginx/domains/cache-enabler.domain.com/public/wp-content/cache/cache-enabler/cache-enabler.domain.com/search/wordpress+cache 
+ls -lh /home/nginx/domains/cache-enabler.domain.com/public/wp-content/cache/cache-enabler/cache-enabler.domain.com/search/wordpress+cache
 total 36K
--rw-rw---- 1 nginx nginx  25K Jul 21 23:20 index.html
--rw-rw---- 1 nginx nginx 6.9K Jul 21 23:20 index.html.gz
+-rw-rw---- 1 nginx nginx  25K Jul 23 07:10 index.html
+-rw-rw---- 1 nginx nginx 6.9K Jul 23 07:10 index.html.gz
 ```
 
 On the Wordpress search result page at `http://cache-enabler.domain.com/search/wordpress+cache/`, the HTML source code footer will have a comment indicating it was cached and pre-gzip compressed by Cache Enabler like
 
 ```php
-<!-- Cache Enabler by KeyCDN @ 21.07.2020 23:20:01 (html gzip) -->
+!-- Cache Enabler by KeyCDN @ 23.07.2020 07:10:12 (html) -->
 ```
 
 ### wrk-cmm with wordpress search non-cached
