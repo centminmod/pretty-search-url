@@ -1,6 +1,6 @@
 # Pretty Search Url Wordpress Plugin
 
-This plugin allows Wordpress `?s=wordpress+cache` query strings to be redirected to pretty url format `/search/wordpress+cache/` which is a necessary step to enable [Wordpress Cache Enabler plugin's](https://wordpress.org/plugins/cache-enabler/) advanced Nginx caching configuration with [Centmin Mod 123.09beta01 and higher's Wordpress auto installer setup](https://servermanager.guide/122/how-to-install-wordpress-on-centmin-mod-lemp-stack-guide/) as outlined [here](https://community.centminmod.com/threads/caching-search-results-with-standard-centminmod-install.20027/#post-85037).
+This plugin allows Wordpress `?s=wordpress+cache` query strings to be redirected to pretty url format `/search/wordpress+cache/` which is a necessary step to enable [Wordpress Cache Enabler plugin's](https://wordpress.org/plugins/cache-enabler/) advanced Nginx caching configuration with [Centmin Mod 123.09beta01 and higher's Wordpress auto installer setup](https://blog.centminmod.com/2019/07/15/122/how-to-install-wordpress-on-centmin-mod-lemp-stack-guide/) as outlined [here](https://community.centminmod.com/threads/caching-search-results-with-standard-centminmod-install.20027/#post-85037).
 
 Cache Enabler plugin has 2 methods of doing caching:
 
